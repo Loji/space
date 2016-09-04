@@ -20,45 +20,14 @@ window.addEventListener('resize', onWindowResize, false);
 
 var planets;
 
-class Planet {
-    constructor(x, y, z, scene) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.mesh = this.createMesh();
-        scene.add(this.mesh);
-        this.setPosition(x, y, z);
-
-    }
-
-    setPosition(x, y, z) {
-        this.mesh.position.x = x;
-        this.mesh.position.y = y;
-        this.mesh.position.z = z;
-    }
-
-    createMesh() {
-        var geometry = new THREE.OctahedronGeometry(100, 3);
-        var material = new THREE.MeshStandardMaterial({
-            color: 0xff0000,
-            roughness: 0.5,
-            metalness: 0.0
-        });
-
-        var mesh = new THREE.Mesh(geometry, material);
-        mesh.receiveShadow = true;
-
-        return mesh;
-    }
-
-    getMesh() {
-        return this.mesh;
-    }
-
-}
+import Planet from './planet.js';
 
 init();
 animate();
+
+function radnInt(min,max) {
+    return Math.floor(Math.random()*(max-min+1)+min);
+}
 
 function init() {
 
@@ -80,6 +49,18 @@ function init() {
     bulbLight.position.set(-500, 10, 0);
     bulbLight.castShadow = true;
     bulbLight.power = 1000;
+    bulbLight.shadowCameraVisible = true;
+
+    var d = 200;
+
+    bulbLight.shadowCameraLeft = -d;
+    bulbLight.shadowCameraRight = d;
+    bulbLight.shadowCameraTop = d;
+    bulbLight.shadowCameraBottom = -d;
+
+    bulbLight.shadowCameraFar = 10000;
+    bulbLight.shadowDarkness = 0.2;
+
     bulbMat.emissiveIntensity = 1000;
     scene.add(bulbLight);
 
@@ -91,7 +72,7 @@ function init() {
 
     planets = [];
     for (var i = 0; i < 10; i++) {
-        planets.push(new Planet(i * 100, i * 100, 0, scene));
+        planets.push(new Planet(i * 100, 0, 0, scene));
     }
 
     scene.add(ambient);
@@ -100,7 +81,8 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.physicallyCorrectLights = true;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ReinhardToneMapping;
+    // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     renderer.gammaInput = true;
     renderer.gammaOutput = true;
@@ -112,8 +94,12 @@ function init() {
 function animate() {
     requestAnimationFrame(animate);
 
-    renderer.toneMappingExposure = Math.pow(0.7, 5.0); // to allow for very bright scenes.
     renderer.shadowMap.enabled = true;
+
+    planets.forEach(function(planet) {
+      planet.getMesh().needsUpdate = true;
+
+    })
 
     camera.position.x += (mouseX - camera.position.x) * .05;
     camera.position.y += (-mouseY - camera.position.y) * .05;
