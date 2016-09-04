@@ -46,7 +46,7 @@ function init() {
     });
     bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
 
-    bulbLight.position.set(-500, 10, 0);
+    bulbLight.position.set(0, 10, 0);
     bulbLight.castShadow = true;
     bulbLight.power = 1000;
     bulbLight.shadowCameraVisible = true;
@@ -57,6 +57,8 @@ function init() {
     bulbLight.shadowCameraRight = d;
     bulbLight.shadowCameraTop = d;
     bulbLight.shadowCameraBottom = -d;
+    bulbLight.shadowMapWidth = 2048;
+    bulbLight.shadowMapHeight = 2048;
 
     bulbLight.shadowCameraFar = 10000;
     bulbLight.shadowDarkness = 0.2;
@@ -71,8 +73,8 @@ function init() {
     scene.add(hemiLight);
 
     planets = [];
-    for (var i = 0; i < 10; i++) {
-        planets.push(new Planet(i * 100, 0, 0, scene));
+    for (var i = 1; i < 10; i++) {
+        planets.push(new Planet(i, scene));
     }
 
     scene.add(ambient);
@@ -82,7 +84,7 @@ function init() {
     renderer.physicallyCorrectLights = true;
     renderer.shadowMap.enabled = true;
     renderer.toneMapping = THREE.ReinhardToneMapping;
-    // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     renderer.gammaInput = true;
     renderer.gammaOutput = true;
@@ -98,7 +100,7 @@ function animate() {
 
     planets.forEach(function(planet) {
       planet.getMesh().needsUpdate = true;
-
+      planet.animate();
     })
 
     camera.position.x += (mouseX - camera.position.x) * .05;
