@@ -3,7 +3,7 @@
 var scene, camera, renderer;
 
 var clock = new THREE.Clock();
-var ambient = new THREE.AmbientLight(0xffffff, 0.05);
+var ambient = new THREE.AmbientLight(0xffffff, 0.31);
 
 var lightHelper;
 
@@ -25,7 +25,7 @@ import Planet from './planet.js';
 init();
 animate();
 
-function radnInt(min,max) {
+function randInt(min,max) {
     return Math.floor(Math.random()*(max-min+1)+min);
 }
 
@@ -33,12 +33,12 @@ function init() {
 
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 100000);
+    camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 100000000);
     camera.position.z = 5;
 
 
-    var bulbGeometry = new THREE.OctahedronGeometry(100, 3);
-    bulbLight = new THREE.PointLight(0xffee88, 10, 10000, 0);
+    var bulbGeometry = new THREE.OctahedronGeometry(80, 3);
+    bulbLight = new THREE.PointLight(0xffee88, 10, 1000000, 0);
     bulbMat = new THREE.MeshStandardMaterial({
         emissive: 0xffffee,
         emissiveIntensity: 1,
@@ -51,31 +51,42 @@ function init() {
     bulbLight.power = 1000;
     bulbLight.shadowCameraVisible = true;
 
-    var d = 200;
+    var d = 100000;
 
     bulbLight.shadowCameraLeft = -d;
     bulbLight.shadowCameraRight = d;
     bulbLight.shadowCameraTop = d;
     bulbLight.shadowCameraBottom = -d;
-    bulbLight.shadowMapWidth = 2048;
-    bulbLight.shadowMapHeight = 2048;
 
-    bulbLight.shadowCameraFar = 10000;
-    bulbLight.shadowDarkness = 0.2;
+    bulbLight.shadowCameraFar = 1000000;
+    bulbLight.shadowDarkness = 0.1;
 
-    bulbMat.emissiveIntensity = 1000;
+    bulbMat.emissiveIntensity = 100000;
     scene.add(bulbLight);
+    //
+    // lightHelper = new THREE.PointLightHelper(bulbLight);
+    // scene.add(lightHelper);
 
-    lightHelper = new THREE.PointLightHelper(bulbLight);
-    scene.add(lightHelper);
-
-    hemiLight = new THREE.HemisphereLight(0xddeeff, 0x0f0e0d, 0.02);
-    scene.add(hemiLight);
+    // hemiLight = new THREE.HemisphereLight(0xddeeff, 0x0f0e0d, 0.02);
+    // scene.add(hemiLight);
 
     planets = [];
-    for (var i = 1; i < 10; i++) {
-        planets.push(new Planet(i, scene));
+    for (var i = 6; i < randInt(10, 15); i++) {
+        if(randInt(0, 5) != 4) { // there is no particular reason it is checking if random is 4
+          planets.push(new Planet(i, scene));
+        }
     }
+
+    // adding skydome
+    var skyGeo = new THREE.OctahedronGeometry(10000000, 3);
+    var texture = THREE.ImageUtils.loadTexture( "images/space.jpg" );
+    var material = new THREE.MeshBasicMaterial({
+            map: texture,
+    });
+    var sky = new THREE.Mesh(skyGeo, material);
+    sky.material.side = THREE.BackSide;
+    scene.add(sky);
+
 
     scene.add(ambient);
 
@@ -98,13 +109,14 @@ function animate() {
 
     renderer.shadowMap.enabled = true;
 
+    var a = 0;
     planets.forEach(function(planet) {
-      planet.getMesh().needsUpdate = true;
       planet.animate();
     })
 
-    camera.position.x += (mouseX - camera.position.x) * .05;
-    camera.position.y += (-mouseY - camera.position.y) * .05;
+    camera.position.x += (mouseX - camera.position.x) * .01;
+    camera.position.y += ((-mouseY - camera.position.y) * .01);
+
 
     camera.lookAt(scene.position);
 
@@ -113,7 +125,6 @@ function animate() {
     // mesh.rotation.x += 0.01;
     // mesh.rotation.y += 0.02;
     // mesh.rotation.z += 0.01;
-    lightHelper.update();
     renderer.render(scene, camera);
 
 }
