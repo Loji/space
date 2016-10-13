@@ -18,6 +18,7 @@ var bulbLight, bulbMat, hemiLight;
 var planets;
 
 import Planet from './planet.js';
+import Util from './util.js';
 
 init();
 animate();
@@ -25,10 +26,6 @@ animate();
 // listeners for function moving camera 
 document.addEventListener('mousemove', onDocumentMouseMove, false);
 window.addEventListener('resize', onWindowResize, false);
-
-function randInt(min,max) {
-    return Math.floor(Math.random()*(max-min+1)+min);
-}
 
 function init() {
 
@@ -72,8 +69,8 @@ function init() {
     scene.add(hemiLight);
 
     planets = [];
-    for (var i = 6; i < randInt(10, 15); i++) {
-        if(randInt(0, 5) != 4) { // there is no particular reason it is checking if random is 4
+    for (var i = 6; i < Util.randInt(10, 15); i++) {
+        if(Util.randInt(0, 5) != 4) { // there is no particular reason it is checking if random is 4
           planets.push(new Planet(i, scene));
         }
     }

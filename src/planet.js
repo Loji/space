@@ -1,9 +1,11 @@
+import Util from './util.js';
+
 export default class Planet {
     constructor(i, scene) {
-        this.x = i * (40 + this.randInt(-5, 5));
+        this.x = i * (40 + Util.randInt(-5, 5));
         this.y = 0;
         this.z = 0;
-        this.size = i * this.randInt(1, 3) / 10;
+        this.size = i * Util.randInt(1, 3) / 10;
 
         this.parentMesh = '';
         this.moons = [];
@@ -12,8 +14,8 @@ export default class Planet {
 
         scene.add(this.parentMesh);
 
-        this.speed = ((this.randInt(1, 2) + this.size) / (i * 3)) / 10;
-        this.parentMesh.rotation.y = this.randInt(0, 360);
+        this.speed = ((Util.randInt(1, 2) + this.size) / (i * 3)) / 10;
+        this.parentMesh.rotation.y = Util.randInt(0, 360);
 
 
     }
@@ -61,10 +63,10 @@ export default class Planet {
         this.mesh.position.z = z;
 
         // take care of adding moons
-        for(var i = 1; i < this.randInt(3, 6); i++) {
-          if(this.randInt(0, 4) == 4) {
+        for(var i = 1; i < Util.randInt(3, 6); i++) {
+          if(Util.randInt(0, 4) == 4) {
             var moon = this.createMoon(i, size / 4);
-            moon.orbitSpeed = (this.randInt(6, 9) - i) * 0.005; 
+            moon.orbitSpeed = (Util.randInt(6, 9) - i) * 0.005; 
             this.moons.push(moon);
             this.mesh.add(moon);
           }
@@ -75,9 +77,6 @@ export default class Planet {
         this.parentMesh.add(this.mesh);
     }
 
-    randInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    }
 
     getMesh() {
         return this.mesh;
