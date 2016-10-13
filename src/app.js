@@ -15,15 +15,16 @@ var windowHalfY = window.innerHeight / 2;
 
 var bulbLight, bulbMat, hemiLight;
 
-document.addEventListener('mousemove', onDocumentMouseMove, false);
-window.addEventListener('resize', onWindowResize, false);
-
 var planets;
 
 import Planet from './planet.js';
 
 init();
 animate();
+
+// listeners for function moving camera 
+document.addEventListener('mousemove', onDocumentMouseMove, false);
+window.addEventListener('resize', onWindowResize, false);
 
 function randInt(min,max) {
     return Math.floor(Math.random()*(max-min+1)+min);
@@ -34,11 +35,11 @@ function init() {
     scene = new THREE.Scene();
 
     camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 100000000);
-    camera.position.z = 5;
+    camera.position.z = 2;
 
 
-    var bulbGeometry = new THREE.OctahedronGeometry(80, 3);
-    bulbLight = new THREE.PointLight(0xffee88, 10, 1000000, 0);
+    var bulbGeometry = new THREE.OctahedronGeometry(10, 3);
+    bulbLight = new THREE.PointLight(0xffee88, 10, Number.MAX_SAFE_INTEGER, 0);
     bulbMat = new THREE.MeshStandardMaterial({
         emissive: 0xffffee,
         emissiveIntensity: 1,
@@ -51,24 +52,24 @@ function init() {
     bulbLight.power = 1000;
     bulbLight.shadowCameraVisible = true;
 
-    var d = 100000;
+    var d = Number.MAX_SAFE_INTEGER;
 
     bulbLight.shadowCameraLeft = -d;
     bulbLight.shadowCameraRight = d;
     bulbLight.shadowCameraTop = d;
     bulbLight.shadowCameraBottom = -d;
 
-    bulbLight.shadowCameraFar = 1000000;
-    bulbLight.shadowDarkness = 0.1;
+    bulbLight.shadowCameraFar = Number.MAX_SAFE_INTEGER;
+    bulbLight.shadowDarkness = 0.2;
 
-    bulbMat.emissiveIntensity = 100000;
+    bulbMat.emissiveIntensity = Number.MAX_SAFE_INTEGER;
     scene.add(bulbLight);
-    //
+    
     // lightHelper = new THREE.PointLightHelper(bulbLight);
     // scene.add(lightHelper);
 
-    // hemiLight = new THREE.HemisphereLight(0xddeeff, 0x0f0e0d, 0.02);
-    // scene.add(hemiLight);
+    hemiLight = new THREE.HemisphereLight(0xddeeff, 0x0f0e0d, 0.02);
+    scene.add(hemiLight);
 
     planets = [];
     for (var i = 6; i < randInt(10, 15); i++) {
@@ -107,26 +108,20 @@ function init() {
 function animate() {
     requestAnimationFrame(animate);
 
-    renderer.shadowMap.enabled = true;
+    // renderer.shadowMap.enabled = true;
 
-    var a = 0;
     planets.forEach(function(planet) {
+      planet.needsUpdate = true;
       planet.animate();
     })
 
-    camera.position.x += (mouseX - camera.position.x) * .01;
-    camera.position.y += ((-mouseY - camera.position.y) * .01);
+    camera.position.x += (mouseX - camera.position.x) * .001;
+    camera.position.y += ((-mouseY - camera.position.y) * .001);
 
 
     camera.lookAt(scene.position);
 
-    // mesh.position.x = 50;
-    //
-    // mesh.rotation.x += 0.01;
-    // mesh.rotation.y += 0.02;
-    // mesh.rotation.z += 0.01;
     renderer.render(scene, camera);
-
 }
 
 

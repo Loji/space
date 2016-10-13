@@ -1,9 +1,9 @@
 export default class Planet {
     constructor(i, scene) {
-        this.x = i * (150 + this.randInt(-5, 5));
+        this.x = i * (40 + this.randInt(-5, 5));
         this.y = 0;
         this.z = 0;
-        this.size = i * this.randInt(1, 3);
+        this.size = i * this.randInt(1, 3) / 10;
 
         this.parentMesh = '';
         this.moons = [];
@@ -12,7 +12,7 @@ export default class Planet {
 
         scene.add(this.parentMesh);
 
-        this.speed = ((this.randInt(1, 2) + this.size) / (i * 3)) / 100;
+        this.speed = ((this.randInt(1, 2) + this.size) / (i * 3)) / 10;
         this.parentMesh.rotation.y = this.randInt(0, 360);
 
 
@@ -35,7 +35,7 @@ export default class Planet {
         moon.receiveShadow = true;
         moon.castShadow = true;
 
-        moon.position.x = i * 20;
+        moon.position.x = i * 3;
         moon.position.y = 0;
         moon.position.z = 0;
 
