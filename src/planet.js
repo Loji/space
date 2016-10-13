@@ -3,7 +3,7 @@ export default class Planet {
         this.x = i * (150 + this.randInt(-5, 5));
         this.y = 0;
         this.z = 0;
-        this.size = this.randInt(6, 12);
+        this.size = i * this.randInt(1, 3);
 
         this.parentMesh = '';
         this.moons = [];
@@ -39,7 +39,10 @@ export default class Planet {
         moon.position.y = 0;
         moon.position.z = 0;
 
-        return moon;
+        var parentMesh = new THREE.Object3D();
+        parentMesh.add(moon);
+
+        return parentMesh;
     }
 
     createMesh(x, y, z, size) {
@@ -61,12 +64,11 @@ export default class Planet {
         for(var i = 1; i < this.randInt(3, 6); i++) {
           if(this.randInt(0, 4) == 4) {
             var moon = this.createMoon(i, size / 4);
-            moon.orbitSpeed = 1;
+            moon.orbitSpeed = (this.randInt(6, 9) - i) * 0.005; 
             this.moons.push(moon);
             this.mesh.add(moon);
           }
         }
-
 
         // create abstract mesh that is used for orbiting
         this.parentMesh = new THREE.Object3D();
@@ -84,6 +86,9 @@ export default class Planet {
     animate() {
         this.parentMesh.rotation.y += this.speed;
         this.mesh.rotation.y += 0.01;
+        this.moons.forEach(function(moon) {
+          moon.rotation.y += moon.orbitSpeed;
+        });
     }
 
 }
